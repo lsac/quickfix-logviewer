@@ -21,11 +21,7 @@ package quickfix.logviewer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import quickfix.*;
 import quickfix.field.MsgType;
@@ -193,7 +189,7 @@ public class MessagesTableModel extends AbstractTableModel {
 		return (Integer)colToTag.get( new Integer(column) );
 	}
 	
-	private void setMessages() {
+	public void setMessages() {
 		if( messages != allMessages
 			&& messages != adminMessages
 			&& messages != appMessages ) {
@@ -269,11 +265,11 @@ public class MessagesTableModel extends AbstractTableModel {
 					int compareResults = 0;
 					String value1 = field.getValue();
 					String value2 = fieldFilter.getValue();
-					int fieldType = dataDictionary.getFieldType( tag );
+					FieldType fieldType = dataDictionary.getFieldType( tag );
 					
 					switch( fieldType ) {
 					// doubles
-					case 3: case 5: case 6: case 14: case 15: case 22:
+						case AMT: case PRICE: case QTY: case FLOAT: case PRICEOFFSET: case PERCENTAGE:
 						try {
 							Double doubleValue1 = new Double( Double.parseDouble( value1 ) );
 							Double doubleValue2 = new Double( Double.parseDouble( value2 ) );
@@ -283,7 +279,7 @@ public class MessagesTableModel extends AbstractTableModel {
 						}
 						break;
 					// integers
-					case 4: case 21: case 23: case 24:
+						case INT: case LENGTH: case SEQNUM: case DAYOFMONTH: case NUMINGROUP:
 						try {
 							Integer integerValue1 = new Integer( Integer.parseInt( value1 ) );
 							Integer integerValue2 = new Integer( Integer.parseInt( value2 ) );
@@ -536,5 +532,30 @@ public class MessagesTableModel extends AbstractTableModel {
 			if( progressBar != null )
 				progressBar.done();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "MessagesTableModel{" +
+				"tags=" + tags +
+				", headerTags=" + headerTags +
+				", bodyTags=" + bodyTags +
+				", trailerTags=" + trailerTags +
+				", colToTag=" + colToTag +
+				", messages=" + messages +
+				", allMessages=" + allMessages +
+				", adminMessages=" + adminMessages +
+				", appMessages=" + appMessages +
+				", filterMessages=" + filterMessages +
+				", categoryMessages=" + categoryMessages +
+				", filter=" + filter +
+				", category=" + Arrays.toString(category) +
+				", dataDictionary=" + dataDictionary +
+				", logFile=" + logFile +
+				'}';
+	}
+
+	public ArrayList getMessages() {
+		return messages;
 	}
 }

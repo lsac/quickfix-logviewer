@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+group 'fixlogviewer'
+version '1.0-SNAPSHOT'
+application {
+    mainClassName 'quickfix.logviewer.Main'
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.logging.log4j:log4j-core:2.11.2'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'org.quickfixj:quickfixj-all:1.6.4'
+    testCompile 'junit:junit:4.13'
+}
+
+test {
+    minHeapSize = "128m"
+    maxHeapSize = "512m"
+    testLogging.showStandardStreams = true
+    systemProperty('user.timezone','GMT')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+    test {
+        java {
+            srcDir 'test'
+        }
+        resources {
+            srcDir 'test/resources'
+        }
+    }
+}
+
+task printSourceSetInformation(){
+    doLast{
+        sourceSets.each { srcSet ->
+            println "["+srcSet.name+"]"
+            print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
+            print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
+            println ""
+        }
+    }
+}
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'quickfix.logviewer.Main'
+
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+assemble.dependsOn customFatJar
