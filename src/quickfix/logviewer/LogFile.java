@@ -18,6 +18,8 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import quickfix.*;
 import quickfix.field.SendingTime;
 
@@ -27,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class LogFile {
+	private static Logger LOG = LogManager.getLogger();
+
 	public final static int TYPE_UNKNOWN = 0;
 	public final static int TYPE_PLAIN = 1;
 	public final static int TYPE_B4B = 2;
@@ -54,7 +58,7 @@ public class LogFile {
 		dataDictionary = aDataDictionary;
 		initialize();
 	}
-	
+
 	public int getType() {
 		return type;
 	}
@@ -78,7 +82,9 @@ public class LogFile {
 			logFileReader = new FileReader( logFile );
 			bufferedLogFileReader = new BufferedReader( logFileReader );
 			bufferedLogFileReader.mark(0);
-		} catch( IOException ioe ) {
+		} catch( Exception ioe ) {
+			LOG.error("log file error", logFile, ioe);
+
 		}
 		if( type == TYPE_UNKNOWN )
 			type = determineType();
@@ -93,6 +99,7 @@ public class LogFile {
 				return TYPE_B4B;
 			}
 		} catch( IOException ioe ) {
+			LOG.error("missing file", ioe);
 		}
 		return TYPE_PLAIN;
 	}
@@ -147,6 +154,9 @@ public class LogFile {
 			if( message == null )
 				continue;
 			messages.add( message );
+			LOG.info("line={} \n {}", line, message);
+
+
 		}
 		
 		if( progressBar != null )
@@ -166,7 +176,7 @@ public class LogFile {
 		return trimMessages( messages, startTime, endTime );
 	}
 	
-	public ArrayList parseNewMessages( ProgressBarPanel progressBar ) throws IOException, CancelException {
+	public ArrayList parseNewMessages( quickfix.logviewer.ProgressBarPanel progressBar ) throws IOException, quickfix.logviewer.CancelException {
 		int startingPosition = lastPosition;
 		int endingPosition = (int)logFile.length();
 		
