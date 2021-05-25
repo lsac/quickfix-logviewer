@@ -38,6 +38,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class FileOpenDialog extends Dialog implements ActionListener, PropertyChangeListener {
@@ -165,22 +167,23 @@ public class FileOpenDialog extends Dialog implements ActionListener, PropertyCh
 		}
 	}
 
-	public Date roundDate( Date date, boolean roundDown ) {
+	public static Date roundDate( Date date, boolean roundDown ) {
 		if( date == null ) return date;
 		long time = date.getTime();
 		long diff = (time % 1000);
 		if( diff != 0 ) diff = 1000 - diff;
 		time += diff;
 		date.setTime( time );
-		
-		if( date.getMinutes() == 0 || date.getSeconds() == 0 )
+
+		if( date.getMinutes() == 0 && date.getSeconds() == 0 )
 			return date;
 		date.setMinutes( 0 );
 		date.setSeconds( 0 );
-		
-		if( roundDown == false )
+
+		if( !roundDown )
 			date.setTime( date.getTime() + 1000 * 60 * 60 );
 
 		return date;
 	}
+
 }
