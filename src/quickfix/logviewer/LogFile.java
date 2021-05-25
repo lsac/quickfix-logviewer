@@ -33,7 +33,7 @@ import java.util.Date;
 import static quickfix.logviewer.Helper.getDateTime;
 
 public class LogFile {
-	private static Logger LOG = LogManager.getLogger();
+	private static Logger LOG = LogManager.getLogger(LogFile.class);
 
 	public final static int TYPE_UNKNOWN = 0;
 	public final static int TYPE_PLAIN = 1;

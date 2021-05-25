@@ -40,13 +40,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.StringField;
 
-public class SplitPane extends JSplitPane 
+public class SplitPane extends JSplitPane
 	implements ListSelectionListener, ActionListener, MouseListener, ChangeListener {
-	
+	private static Logger LOG = LogManager.getLogger();
+
 	private Frame frame = null;
 	private MenuBar menuBar = null;
 	private ProgressBarPanel progressBar = null;
@@ -108,6 +111,10 @@ public class SplitPane extends JSplitPane
 				tracer.stop();
 			else
 				tracer.start();
+		} else if( source == MenuBar.fileValidate ) {
+
+			// TODO
+			LOG.debug("dd validate = {}", MenuBar.fileValidate.isEnabled());
 		} else if( source == MenuBar.filterAllMessages ) {
 			currentModel.viewAll();
 		} else if( source == MenuBar.filterAdministrativeMessages ) {

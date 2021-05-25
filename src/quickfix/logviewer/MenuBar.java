@@ -42,7 +42,8 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 	public static final JMenuItem fileExportXML = new JMenuItem( "To XML" );
 	public static final JMenuItem fileExportCSV = new JMenuItem( "To CSV" );
 	public static final JCheckBoxMenuItem fileTrace = new JCheckBoxMenuItem( "Trace" );
-	
+	public static final JCheckBoxMenuItem fileValidate = new JCheckBoxMenuItem( "Validate Msg" );
+
 	private JMenu viewMenu = new JMenu("View");
 	public static final JMenuItem viewAutosizeColumns = new JMenuItem( "Autosize Columns" );
 	public static final JMenuItem viewAutosizeAndHideColumns = new JMenuItem( "Autosize And Hide Columns" );
@@ -96,6 +97,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 		fileMenu.add( new JSeparator() );
 		fileTrace.setEnabled( true );		
 		fileMenu.add( fileTrace );		
+		fileMenu.add( fileValidate );
 		add( fileMenu );
 		
 		viewMenu.add( viewAutosizeColumns );
@@ -173,6 +175,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 			fileExportXML.addActionListener( l );
 			fileExportCSV.addActionListener( l );
 			fileTrace.addActionListener( l );
+			fileValidate.addActionListener( l );
 			viewAutosizeColumns.addActionListener( l );
 			viewAutosizeAndHideColumns.addActionListener( l );
 			viewExportFIX.addActionListener( l );
