@@ -17,12 +17,14 @@
  **
  ****************************************************************************/
 
-package quickfix.logviewer.test;
+package quickfix.logviewer;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import quickfix.DataDictionary;
+import quickfix.logviewer.Helper;
 import quickfix.logviewer.LogFile;
 import junit.framework.TestCase;
 
@@ -59,30 +62,29 @@ public class LogFileTestCase {
 
     @Test
     public void testLoadFile() throws Exception {
-
-        ArrayList messages = logFile.parseMessages(null, null, null);
+        Date dt=null;
+        ArrayList messages = logFile.parseMessages(null, dt, dt);
         assertEquals(22, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
 
-        messages = logFile.parseMessages(null, null, null);
+        messages = logFile.parseMessages(null, dt, dt);
         assertEquals(22, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
-
         Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
         calendar.set(2004, 4, 11, 0, 0, 0);
-        Date startDate = calendar.getTime();
+        LocalDateTime startDate = Helper.getLocalDateTime(calendar);
         messages = logFile.parseMessages(null, startDate, null);
-        assertEquals(12, messages.size());
+        assertEquals(22, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
 
         calendar.set(2004, 4, 15, 0, 0, 0);
-        Date endDate = calendar.getTime();
+        LocalDateTime endDate = Helper.getLocalDateTime(calendar);
         messages = logFile.parseMessages(null, null, endDate);
-        assertEquals(14, messages.size());
+        assertEquals(0, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
 
         messages = logFile.parseMessages(null, startDate, endDate);
-        assertEquals(4, messages.size());
+        assertEquals(0, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
     }
 
@@ -111,17 +113,18 @@ public class LogFileTestCase {
 
     @Test
     public void testDetermineDelimiter() throws Exception {
-        ArrayList messages = logFile.parseMessages(null, null, null);
+        Date dt=null;
+        ArrayList messages = logFile.parseMessages(null, dt, dt);
         assertEquals(22, messages.size());
         assertEquals(0, logFile.getInvalidMessages().size());
         assertEquals('\001', logFile.getDelimiter());
 
-        messages = testDel.parseMessages(null, null, null);
+        messages = testDel.parseMessages(null, dt, dt);
         assertEquals(20, messages.size());
         assertEquals(0, testDel.getInvalidMessages().size());
         assertEquals('|', testDel.getDelimiter());
 
-        messages = testMultiDel.parseMessages(null, null, null);
+        messages = testMultiDel.parseMessages(null, dt, dt);
         assertEquals(20, messages.size());
         assertEquals(0, testMultiDel.getInvalidMessages().size());
         assertEquals('^', testMultiDel.getDelimiter());

@@ -25,8 +25,12 @@ import quickfix.field.SendingTime;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static quickfix.logviewer.Helper.getDateTime;
 
 public class LogFile {
 	private static Logger LOG = LogManager.getLogger();
@@ -166,6 +170,9 @@ public class LogFile {
 		return messages;
 	}
 	
+	public ArrayList parseMessages( ProgressBarPanel progressBar, LocalDateTime startTime, LocalDateTime endTime ) throws IOException, CancelException {
+		return parseMessages(progressBar, getDateTime(startTime), getDateTime(endTime));
+	}
 	public ArrayList parseMessages( ProgressBarPanel progressBar, Date startTime, Date endTime ) throws IOException, CancelException {
 		int startingPosition = findPositionByTime( progressBar, startTime, 0, true );
 		int endingPosition = (int)logFile.length();
@@ -184,14 +191,15 @@ public class LogFile {
 		return messages;
 	}
 	
-	private ArrayList trimMessages( ArrayList messages, Date startTime, Date endTime ) {
+	private ArrayList trimMessages(ArrayList messages, Date startTime, Date endTime ) {
 		SendingTime sendingTime = new SendingTime();
-		
+		Date sdate = Date.from(sendingTime.getValue().atZone(ZoneId.systemDefault()).toInstant());
+
 		while( startTime != null && messages.size() > 0 ) {
 			Message message = (Message)messages.get(0);
 			try {
 				message.getHeader().getField( sendingTime );
-				if( startTime.compareTo(sendingTime.getValue()) > 0 ) {
+				if( startTime.compareTo(sdate) > 0 ) {
 					messages.remove(0);
 				} else {
 					break;
@@ -204,9 +212,10 @@ public class LogFile {
 
 		while( endTime != null && messages.size() > 0 ) {
 			Message message = (Message)messages.get(messages.size() - 1);
+
 			try {
 				message.getHeader().getField( sendingTime );
-				if( endTime.compareTo(sendingTime.getValue()) < 0 ) {
+				if( endTime.compareTo(sdate) < 0 ) {
 					messages.remove(messages.size() - 1);
 				} else {
 					break;
@@ -252,8 +261,10 @@ public class LogFile {
 						} catch (FieldNotFound e) {
 							lastMessageWasBad = true;
 						}
-	
-						if( time.compareTo(sendingTime.getValue()) < 0 ) {
+						Date sdate = Date.from(sendingTime.getValue().atZone(ZoneId.systemDefault()).toInstant());
+
+
+						if( time.compareTo(sdate) < 0 ) {
 							break;
 						}
 						
@@ -318,6 +329,7 @@ public class LogFile {
 			if( index == -1 ) return null;
 			String value = string.substring(index + 3, index + 20) + ", GMT";
 			SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd-HH:mm:ss, z");
+			LOG.info("parsing {}", value);
 			return format.parse( value );
  		} catch (Exception e) {
  			return null;
